@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "🔍 Running pre-commit checks matching CI logic..."
+
+# 1. Format check
+echo "👉 [1/3] Checking code formatting (cargo fmt)..."
+if ! cargo fmt --check; then
+  echo "❌ Formatting check failed! Run 'cargo fmt' to fix formatting issues."
+  exit 1
+fi
+
+# 2. Clippy lints
+echo "👉 [2/3] Running Clippy lints (cargo clippy)..."
+if ! cargo clippy --all-targets --all-features -- -D warnings; then
+  echo "❌ Clippy check failed! Fix the reported warnings or errors before committing."
+  exit 1
+fi
+
+# 3. Tests
+echo "👉 [3/3] Running test suite (cargo test)..."
+if ! cargo test --all-targets --all-features; then
+  echo "❌ Test suite failed! Fix failing tests before committing."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed successfully!"

@@ -1,0 +1,27 @@
+target/
+Cargo.lock
+.env
+.DS_Store
+
+# Rust build artifacts
+/target
+*.rlib
+*.d
+*.so
+*.dll
+*.exe
+# Cargo-specific
+.cargo/registry
+.cargo/git
+.fingerprint/
+/.tmp/
+# IDE
+.idea/
+.vscode/
+# Logs
+*.log
+# OS
+.DS_Store
+Thumbs.db
+# Documentation
+/doc

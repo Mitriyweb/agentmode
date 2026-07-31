@@ -1,0 +1,31 @@
+[package]
+name = "agentmode"
+version = "0.1.0"
+edition = "2021"
+description = "Keep your Mac awake while AI agents run — lid closed, no power required"
+repository = "https://github.com/Mitriyweb/agentmode"
+license = "MIT"
+readme = "README.md"
+keywords = ["macos", "agent", "ai", "sleep", "caffeinate"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "agentmode"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "time", "process"] }
+reqwest = { version = "0.12", features = ["json"] }
+clap = { version = "4", features = ["derive", "env"] }
+core-foundation = "0.9"
+anyhow = "1"
+libc = "0.2"
+serde_json = "1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
