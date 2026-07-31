@@ -32,13 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/Mitriyweb/agentmode/main/install.sh
 
 Detects your platform (macOS Apple Silicon or Intel), downloads the binary, and installs it to `~/.local/bin/`.
 
-### Option 2: Via Cargo
-
-```bash
-cargo install agentmode
-```
-
-### Option 3: From source
+### Option 2: From source
 
 ```bash
 git clone https://github.com/Mitriyweb/agentmode.git
