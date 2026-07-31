@@ -1,13 +1,10 @@
-name: CI & Auto-Release
+name: CI
 
 on:
   push:
     branches: [main]
-    tags: ['v*']
   pull_request:
     branches: [main]
-  release:
-    types: [published]
 
 env:
   CARGO_TERM_COLOR: always
@@ -66,50 +63,4 @@ jobs:
           name: agentmode-${{ matrix.target }}
           path: target/${{ matrix.target }}/release/agentmode
 
-  release:
-    name: Publish Release Binaries
-    needs: build
-    runs-on: macos-latest
-    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download arm64 binary
-        uses: actions/download-artifact@v4
-        with:
-          name: agentmode-aarch64-apple-darwin
-          path: dist/arm64
-
-      - name: Download x86_64 binary
-        uses: actions/download-artifact@v4
-        with:
-          name: agentmode-x86_64-apple-darwin
-          path: dist/x86_64
-
-      - name: Create universal binary
-        run: |
-          lipo -create \
-            dist/arm64/agentmode \
-            dist/x86_64/agentmode \
-            -output dist/agentmode-universal
-          chmod +x dist/agentmode-universal
-
-      - name: Package archives
-        run: |
-          cd dist
-          tar czf agentmode-macos-universal.tar.gz agentmode-universal
-          tar czf agentmode-macos-arm64.tar.gz -C arm64 agentmode
-          tar czf agentmode-macos-x86_64.tar.gz -C x86_64 agentmode
-
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          files: |
-            dist/agentmode-macos-universal.tar.gz
-            dist/agentmode-macos-arm64.tar.gz
-            dist/agentmode-macos-x86_64.tar.gz
 

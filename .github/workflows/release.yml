@@ -1,0 +1,164 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - Cargo.toml
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, detect the version and report but do not create tag or release"
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare Release
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    outputs:
+      release: ${{ steps.check.outputs.release }}
+      tag: ${{ steps.check.outputs.tag }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check version and tag
+        id: check
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            TAG="${{ github.ref_name }}"
+            VERSION="${TAG#v}"
+            echo "Triggered by tag: $TAG"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          VERSION=$(grep -m1 '^version = ' Cargo.toml | cut -d '"' -f2)
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::Cargo.toml has no 'version' field"
+            exit 1
+          fi
+          TAG="v$VERSION"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists. Skipping release."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "DRY RUN: would create annotated tag $TAG and push it."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "New version detected: $VERSION. Creating tag $TAG..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+
+          echo "release=true" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  build-and-release:
+    name: Build & Publish Release
+    needs: prepare
+    if: needs.prepare.outputs.release == 'true'
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        target:
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentmode-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/agentmode
+
+  publish:
+    name: Publish Release Assets
+    needs: [prepare, build-and-release]
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download arm64 binary
+        uses: actions/download-artifact@v4
+        with:
+          name: agentmode-aarch64-apple-darwin
+          path: dist/arm64
+
+      - name: Download x86_64 binary
+        uses: actions/download-artifact@v4
+        with:
+          name: agentmode-x86_64-apple-darwin
+          path: dist/x86_64
+
+      - name: Create universal binary
+        run: |
+          lipo -create \
+            dist/arm64/agentmode \
+            dist/x86_64/agentmode \
+            -output dist/agentmode-universal
+          chmod +x dist/agentmode-universal
+
+      - name: Package archives
+        run: |
+          cd dist
+          tar czf agentmode-macos-universal.tar.gz agentmode-universal
+          tar czf agentmode-macos-arm64.tar.gz -C arm64 agentmode
+          tar czf agentmode-macos-x86_64.tar.gz -C x86_64 agentmode
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: Release ${{ needs.prepare.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            dist/agentmode-macos-universal.tar.gz
+            dist/agentmode-macos-arm64.tar.gz
+            dist/agentmode-macos-x86_64.tar.gz
