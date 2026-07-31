@@ -24,13 +24,21 @@ Unlike `caffeinate`, **agentmode** is process-aware: it holds the sleep assertio
 
 ## Installation
 
-### Via Cargo
+### Option 1: One-line install (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Mitriyweb/agentmode/main/install.sh | bash
+```
+
+Detects your platform (macOS Apple Silicon or Intel), downloads the binary, and installs it to `~/.local/bin/`.
+
+### Option 2: Via Cargo
 
 ```bash
 cargo install agentmode
 ```
 
-### From source
+### Option 3: From source
 
 ```bash
 git clone https://github.com/Mitriyweb/agentmode.git
