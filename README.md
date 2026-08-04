@@ -41,12 +41,6 @@ cargo build --release
 cp target/release/agentmode /usr/local/bin/
 ```
 
-### Via Homebrew (coming soon)
-
-```bash
-brew install Mitriyweb/tap/agentmode
-```
-
 ---
 
 ## Usage
@@ -192,29 +186,6 @@ cargo clippy --all-targets --all-features -- -D warnings
 # Run pre-commit checks matching CI
 ./.githooks/pre-commit
 ```
-
----
-
-## Comparison
-
-| Tool | Process-aware | Telegram | No GUI needed | Rust |
-|------|:---:|:---:|:---:|:---:|
-| **agentmode** | ✅ | ✅ | ✅ | ✅ |
-| caffeinate | ✅ (with `-w`) | ❌ | ✅ | ❌ |
-| Amphetamine | ❌ | ❌ | ❌ | ❌ |
-| NoSleep | ❌ | ❌ | ❌ | ❌ |
-
----
-
-## Contributing
-
-PRs welcome. Especially interested in:
-
-- [ ] Homebrew formula
-- [ ] `--notify-discord` flag
-- [ ] `--max-duration` safety timeout
-- [ ] macOS menubar companion app (Swift)
-- [ ] `agentmode status` — show active assertions
 
 ---
 
