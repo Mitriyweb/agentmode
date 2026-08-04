@@ -9,7 +9,7 @@ use std::time::Instant;
 #[derive(Parser)]
 #[command(
     name = "agentmode",
-    version = "0.1.0",
+    version = env!("CARGO_PKG_VERSION"),
     about = "Keep your Mac awake while AI agents run — lid closed, no power required",
     long_about = None,
 )]

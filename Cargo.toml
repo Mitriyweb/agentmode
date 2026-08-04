@@ -1,6 +1,6 @@
 [package]
 name = "agentmode"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 description = "Keep your Mac awake while AI agents run — lid closed, no power required"
 repository = "https://github.com/Mitriyweb/agentmode"
