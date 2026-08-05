@@ -40,10 +40,13 @@ impl TelegramNotifier {
 
     pub async fn notify_start(&self, command: &str, pid: u32) -> Result<()> {
         let truncated = truncate_str(command, 500);
+        let host = hostname();
         let msg = format!(
             "🟢 <b>agentmode started</b>\n\
-             <code>{}</code>\n\
-             PID: <code>{}</code>",
+             🖥 <b>Host:</b> <code>{}</code>\n\
+             💻 <b>Command:</b>\n<code>{}</code>\n\
+             🔢 <b>PID:</b> <code>{}</code>",
+            escape_html(&host),
             escape_html(&truncated),
             pid
         );
@@ -56,23 +59,59 @@ impl TelegramNotifier {
         exit_code: i32,
         elapsed_secs: u64,
     ) -> Result<()> {
-        let icon = if exit_code == 0 { "✅" } else { "❌" };
-        let status = if exit_code == 0 { "Success" } else { "Failed" };
+        let (icon, status) = if exit_code == 0 {
+            ("✅", "Success")
+        } else {
+            ("❌", "Failed")
+        };
         let elapsed = format_duration(elapsed_secs);
         let truncated = truncate_str(command, 500);
+        let host = hostname();
 
         let msg = format!(
-            "{} <b>agentmode done</b> — {}\n\
-             <code>{}</code>\n\
-             Exit code: <code>{}</code> | Elapsed: {}",
+            "{} <b>agentmode done</b> — <b>{}</b>\n\
+             🖥 <b>Host:</b> <code>{}</code>\n\
+             💻 <b>Command:</b>\n<code>{}</code>\n\
+             🔢 <b>Exit code:</b> <code>{}</code>\n\
+             ⏱ <b>Elapsed:</b> {}",
             icon,
             status,
+            escape_html(&host),
             escape_html(&truncated),
             exit_code,
             elapsed
         );
         self.send(&msg).await
     }
+
+    #[allow(dead_code)]
+    pub async fn notify_error(&self, command: &str, error: &str) -> Result<()> {
+        let truncated = truncate_str(command, 300);
+        let err_truncated = truncate_str(error, 300);
+        let host = hostname();
+
+        let msg = format!(
+            "💥 <b>agentmode error</b>\n\
+             🖥 <b>Host:</b> <code>{}</code>\n\
+             💻 <b>Command:</b>\n<code>{}</code>\n\
+             ⚠️ <b>Error:</b> <code>{}</code>",
+            escape_html(&host),
+            escape_html(&truncated),
+            escape_html(&err_truncated),
+        );
+        self.send(&msg).await
+    }
+}
+
+/// Returns the machine hostname, or "unknown" on failure.
+fn hostname() -> String {
+    std::process::Command::new("hostname")
+        .output()
+        .ok()
+        .and_then(|o| String::from_utf8(o.stdout).ok())
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| "unknown".to_string())
 }
 
 fn truncate_str(s: &str, max_len: usize) -> String {

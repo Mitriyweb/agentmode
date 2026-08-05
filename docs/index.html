@@ -12,6 +12,7 @@
             --accent-color: #58a6ff;
             --border-color: #30363d;
             --code-bg: #161b22;
+            --tg-blue: #2AABEE;
         }
 
         body {
@@ -24,7 +25,7 @@
         }
 
         header {
-            background: linear-gradient(135deg, #1f2937, #111827);
+            background: linear-gradient(135deg, #1a2236, #0d1117);
             border-bottom: 1px solid var(--border-color);
             padding: 4rem 2rem;
             text-align: center;
@@ -70,9 +71,7 @@
             transition: background-color 0.2s;
         }
 
-        .btn:hover {
-            background-color: #2ea043;
-        }
+        .btn:hover { background-color: #2ea043; }
 
         .btn-outline {
             background-color: transparent;
@@ -91,9 +90,7 @@
             gap: 15px;
         }
 
-        section {
-            margin-bottom: 3rem;
-        }
+        section { margin-bottom: 3rem; }
 
         h2 {
             border-bottom: 1px solid var(--border-color);
@@ -101,6 +98,8 @@
             color: #ffffff;
             font-size: 1.75rem;
         }
+
+        h3 { color: #e6edf3; }
 
         pre {
             background-color: var(--code-bg);
@@ -115,6 +114,7 @@
             font-size: 90%;
         }
 
+        /* Feature cards */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -127,11 +127,153 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.5rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
         }
 
         .feature-card h3 {
             margin-top: 0;
             color: #ffffff;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .steps li {
+            position: relative;
+            padding: 1rem 1rem 1rem 3.5rem;
+            margin-bottom: 0.75rem;
+            background: #161b22;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .steps li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--tg-blue);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 28px;
+            text-align: center;
+        }
+
+        /* Telegram phone mockup */
+        .tg-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .tg-bubble-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.4rem;
+        }
+
+        .tg-bubble-label {
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-left: 4px;
+        }
+
+        .tg-bubble {
+            background: #212d3b;
+            border-radius: 0 12px 12px 12px;
+            padding: 0.75rem 1rem;
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            border: 1px solid #2d3f52;
+            max-width: 320px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .tg-bubble b { color: #e6edf3; }
+        .tg-bubble code {
+            background: #162032;
+            border-radius: 4px;
+            padding: 1px 4px;
+            color: #79c0ff;
+        }
+
+        /* How-it-works diagram */
+        .flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin: 1.5rem 0;
+            max-width: 540px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.85rem 1.2rem;
+            background: #161b22;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .flow-step + .flow-step {
+            margin-top: -1px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .flow-step:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .flow-step:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .flow-icon {
+            font-size: 1.1rem;
+            min-width: 24px;
+            text-align: center;
+            margin-top: 1px;
+        }
+
+        .flow-text {
+            font-size: 0.92rem;
+            color: var(--text-color);
+        }
+
+        .flow-text code {
+            background: #0d1117;
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #79c0ff;
+            font-size: 0.85rem;
         }
 
         footer {
@@ -142,14 +284,8 @@
             font-size: 0.9rem;
         }
 
-        a {
-            color: var(--accent-color);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -191,7 +327,7 @@
                 </div>
                 <div class="feature-card">
                     <h3>📬 Telegram Notifications</h3>
-                    <p>Get status updates directly to your Telegram bot on task start, completion, and exit status.</p>
+                    <p>Get rich messages on your phone — hostname, command, PID, exit code, elapsed time — on start and finish. Zero extra dependencies.</p>
                 </div>
             </div>
         </section>
@@ -216,14 +352,84 @@ cp target/release/agentmode /usr/local/bin/</code></pre>
             <h2>Usage Examples</h2>
 
             <h3>Run an AI agent or any shell script:</h3>
-            <pre><code>agentmode run "claude -p 'analyze this codebase' --output-format json"</code></pre>
+            <pre><code>agentmode run "claude -p 'analyze this codebase' --output-format json"
+agentmode run "bun swarm/index.ts"
+agentmode run "python train.py --epochs 100"</code></pre>
+
+            <h3>Full shell syntax (pipes, &&, etc.):</h3>
+            <pre><code>agentmode run "cd ~/project && npm run build && npm test"</code></pre>
 
             <h3>Attach to an already running task:</h3>
-            <pre><code># Attach to PID 12345
+            <pre><code># Find your agent's PID
+ps aux | grep swarm
+
+# Attach agentmode to it
 agentmode attach 12345</code></pre>
 
             <h3>Keep awake indefinitely until Ctrl+C:</h3>
             <pre><code>agentmode keep "downloading heavy datasets"</code></pre>
+        </section>
+
+        <section id="telegram">
+            <h2>📬 Telegram Notifications</h2>
+            <p>Get notified on your phone the moment an agent starts or finishes — with hostname, command, exit code, and elapsed time.</p>
+
+            <ol class="steps">
+                <li>
+                    <strong>Create a bot</strong> — open Telegram, message <a href="https://t.me/botfather" target="_blank">@BotFather</a>, send <code>/newbot</code>, and copy the token it gives you.
+                </li>
+                <li>
+                    <strong>Get your chat ID</strong> — message <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> and copy the numeric ID it replies with.
+                </li>
+                <li>
+                    <strong>Export the variables</strong> — add to your shell profile (<code>~/.zshrc</code> or <code>~/.bashrc</code>):
+                    <pre style="margin-top:0.75rem"><code>export TELEGRAM_TOKEN="123456:ABC-your-token"
+export TELEGRAM_CHAT_ID="987654321"</code></pre>
+                    Then run any agentmode command as normal — notifications are automatic.
+                </li>
+            </ol>
+
+            <h3>Sample messages</h3>
+            <div class="tg-preview-grid">
+                <div class="tg-bubble-wrap">
+                    <span class="tg-bubble-label">On start</span>
+                    <div class="tg-bubble"><b>🟢 agentmode started</b>
+🖥 <b>Host:</b> <code>my-macbook.local</code>
+💻 <b>Command:</b>
+<code>bun agent-team/index.ts</code>
+🔢 <b>PID:</b> <code>48291</code></div>
+                </div>
+                <div class="tg-bubble-wrap">
+                    <span class="tg-bubble-label">On success</span>
+                    <div class="tg-bubble"><b>✅ agentmode done — Success</b>
+🖥 <b>Host:</b> <code>my-macbook.local</code>
+💻 <b>Command:</b>
+<code>bun agent-team/index.ts</code>
+🔢 <b>Exit code:</b> <code>0</code>
+⏱ <b>Elapsed:</b> 14m 32s</div>
+                </div>
+                <div class="tg-bubble-wrap">
+                    <span class="tg-bubble-label">On failure</span>
+                    <div class="tg-bubble"><b>❌ agentmode done — Failed</b>
+🖥 <b>Host:</b> <code>my-macbook.local</code>
+💻 <b>Command:</b>
+<code>bun agent-team/index.ts</code>
+🔢 <b>Exit code:</b> <code>1</code>
+⏱ <b>Elapsed:</b> 2m 5s</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top:2rem">How it works</h3>
+            <div class="flow">
+                <div class="flow-step"><span class="flow-icon">⚡</span><span class="flow-text">Acquire <code>IOKit PreventUserIdleSystemSleep</code> assertion — Mac stays awake</span></div>
+                <div class="flow-step"><span class="flow-icon">🚀</span><span class="flow-text">Spawn child process (your command)</span></div>
+                <div class="flow-step"><span class="flow-icon">📬</span><span class="flow-text">POST to <code>api.telegram.org/sendMessage</code> → <b>Start</b> notification with PID &amp; hostname</span></div>
+                <div class="flow-step"><span class="flow-icon">⏳</span><span class="flow-text">Poll child process every 500 ms, waiting for exit</span></div>
+                <div class="flow-step"><span class="flow-icon">📬</span><span class="flow-text">POST to <code>api.telegram.org/sendMessage</code> → <b>Done</b> notification with exit code &amp; elapsed time</span></div>
+                <div class="flow-step"><span class="flow-icon">🔓</span><span class="flow-text">Drop IOKit assertion — Mac can sleep again (even on crash, via Rust <code>Drop</code>)</span></div>
+            </div>
+
+            <p style="margin-top:1rem">Telegram errors are printed as warnings and <strong>never abort your command</strong>. Messages use HTML parse mode for rich formatting.</p>
         </section>
     </div>
 

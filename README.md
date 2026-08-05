@@ -81,33 +81,70 @@ Press `Ctrl+C` to release.
 
 ## Telegram Notifications
 
-Get notified on your phone when the agent finishes.
+Get notified on your phone when the agent starts and finishes — with exit code, elapsed time, and hostname.
 
-**Step 1:** Create a bot via [@BotFather](https://t.me/botfather), get your token.
+### Setup (3 steps)
 
-**Step 2:** Get your chat ID via [@userinfobot](https://t.me/userinfobot).
+**Step 1:** Create a bot via [@BotFather](https://t.me/botfather) and copy the token.
 
-**Step 3:** Either export env vars or pass as flags:
+**Step 2:** Get your personal chat ID via [@userinfobot](https://t.me/userinfobot).
+
+**Step 3:** Export the two environment variables (add to `~/.zshrc` or `~/.bashrc`):
 
 ```bash
-# Via environment variables (recommended)
 export TELEGRAM_TOKEN="123456:ABC-your-token"
 export TELEGRAM_CHAT_ID="987654321"
+```
 
+That's it — agentmode will automatically pick them up:
+
+```bash
 agentmode run "bun agent-team/index.ts"
 ```
 
+Or pass them inline per-command:
+
 ```bash
-# Or inline flags
 agentmode run \
   --telegram-token "123456:ABC-your-token" \
   --telegram-chat-id "987654321" \
   "bun swarm/index.ts"
 ```
 
-You'll receive:
-- 🟢 **Start message** — command + PID
-- ✅ / ❌ **Done message** — exit code + elapsed time
+### What you receive
+
+**On start:**
+```
+🟢 agentmode started
+🖥 Host: my-macbook.local
+💻 Command:
+bun agent-team/index.ts
+🔢 PID: 48291
+```
+
+**On completion (success):**
+```
+✅ agentmode done — Success
+🖥 Host: my-macbook.local
+💻 Command:
+bun agent-team/index.ts
+🔢 Exit code: 0
+⏱ Elapsed: 14m 32s
+```
+
+**On completion (failure):**
+```
+❌ agentmode done — Failed
+🖥 Host: my-macbook.local
+💻 Command:
+bun agent-team/index.ts
+🔢 Exit code: 1
+⏱ Elapsed: 2m 5s
+```
+
+### How it works
+
+agentmode calls the Telegram Bot API (`sendMessage`) twice during a run: once right after spawning the process, and once after it exits. Messages use Telegram's HTML parse mode for bold labels and monospace code blocks. Errors from the Telegram API are shown as warnings but never abort the monitored command.
 
 ---
 
