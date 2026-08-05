@@ -86,6 +86,8 @@ git commit -m "type: description"
 
 **NEVER** use `--no-verify` or `-n` — commit hooks MUST run.
 
+If this change includes a version bump, verify `Cargo.toml` (and `Cargo.lock` if updated) are correct before committing.
+
 ### Handle Hook / Build Failures
 
 If validation or commit hooks fail:
